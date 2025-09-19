@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cálculo do Comprimento de Onda</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input, select, button {
+            padding: 10px;
+            margin: 10px 0;
+        }
+    </style>
+    <script>
+        function calcularComprimento() {
+            const frequenciaMHz = parseFloat(document.getElementById("frequencia").value);
+            const tipoCabo = document.getElementById("tipoCabo").value;
+
+            // Velocidades de propagação em metros por segundo (m/s)
+            const velocidades = {
+                "RG-58": 0.66 * 3e8,
+                "RGC-58": 0.66 * 3e8,
+                "RG-213": 0.66 * 3e8,
+                "RGC-213": 0.66 * 3e8,
+                "RG-11": 0.66 * 3e8,
+                "RGC-11": 0.66 * 3e8,
+                "RG-174": 0.70 * 3e8,
+                "RG-142": 0.70 * 3e8,
+                "Cellflex 1/2": 0.85 * 3e8,
+                "Cellflex 7/8": 0.85 * 3e8
+            };
+
+            if (frequenciaMHz <= 0 || isNaN(frequenciaMHz)) {
+                alert("A frequência deve ser maior que zero e válida.");
+                return;
+            }
+
+            // Converter MHz para Hz
+            const frequenciaHz = frequenciaMHz * 1e6;
+
+            const velocidade = velocidades[tipoCabo];
+            const comprimentoOnda = velocidade / frequenciaHz;  // Uma onda
+
+            // Meia onda e um quarto de onda
+            const comprimentoMeiaOnda = comprimentoOnda / 2;
+            const comprimentoQuartoOnda = comprimentoOnda / 4;
+
+            // Exibir os resultados
+            document.getElementById("resultado").innerHTML = `
+                Comprimento de uma onda: ${comprimentoOnda.toFixed(2)} metros<br>
+                Comprimento de meia onda: ${comprimentoMeiaOnda.toFixed(2)} metros<br>
+                Comprimento de um quarto de onda: ${comprimentoQuartoOnda.toFixed(2)} metros
+            `;
+        }
+    </script>
+</head>
+<body>
+<center>
+    <h1>Cálculo do Comprimento de Onda de Cabos Coaxiais</h1>
+
+    <label for="frequencia">Frequência (MHz):</label>
+    <input type="number" id="frequencia" placeholder="Digite a frequência em MHz" required>
+    <br><br>
+    
+    <label for="tipoCabo">Tipo de Cabo:</label>
+    <select id="tipoCabo">
+        <option value="RG-58">RG-58</option>
+        <option value="RGC-58">RGC-58</option>
+        <option value="RG-213">RG-213</option>
+        <option value="RGC-213">RGC-213</option>
+        <option value="RG-11">RG-11</option>
+        <option value="RGC-11">RGC-11</option>
+        <option value="RG-174">RG-174</option>
+        <option value="RG-142">RG-142</option>
+        <option value="Cellflex 1/2">Cellflex 1/2</option>
+        <option value="Cellflex 7/8">Cellflex 7/8</option>
+    </select>
+    <br><br>
+    
+    <button onclick="calcularComprimento()">Calcular Comprimento de Onda</button>
+    <h2 id="resultado"></h2>
+    <br><button onclick="history.back()">Voltar</button>
+</center>
+</body>
+</html>

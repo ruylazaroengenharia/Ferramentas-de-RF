@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cálculo da Perda no Cabo Coaxial</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input, select, button {
+            padding: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body><center>
+
+    <h1>Cálculo da Perda no Cabo Coaxial</h1>
+    
+    <label for="frequencia">Frequência (MHz):</label>
+    <input type="number" id="frequencia" placeholder="Digite a frequência em MHz" step="any">
+    <br></br>
+    <label for="distancia">Distância do Cabo (m):</label>
+    <input type="number" id="distancia" placeholder="Digite a distância em metros" step="any">
+     <br></br>
+    <label for="cabo">Escolha o Cabo Coaxial:</label>
+    <select id="cabo">
+        <option value="RG-58">RG-58</option>
+        <option value="RG-213">RG-213</option>
+        <option value="RG-174">RG-174</option>
+        <option value="RGC-58">RGC-58</option>
+        <option value="RGC-213">RGC-213</option>
+        <option value="RG-11">RG-11</option>
+        <option value="RGC-11">RGC-11</option>
+        <option value="RG-142">RG-142</option>
+        <option value="Cellflex 1/2">Cellflex 1/2</option>
+        <option value="Cellflex 7/8">Cellflex 7/8</option>
+    </select>
+     <br></br>
+    <button onclick="calcular()">Calcular Perda e Potência Máxima</button>
+    
+    <p id="resultado"></p>
+
+    <script>
+        // Dados dos cabos (Atenuação em dB/100m e Potência Máxima em W)
+        const cabos = {
+            "RG-58": { atenuacao: 16, potencia: 100 },
+            "RG-213": { atenuacao: 7.5, potencia: 2000 },
+            "RG-174": { atenuacao: 20, potencia: 50 },
+            "RGC-58": { atenuacao: 16, potencia: 100 },
+            "RGC-213": { atenuacao: 7.5, potencia: 2000 },
+            "RG-11": { atenuacao: 4.2, potencia: 5000 },
+            "RGC-11": { atenuacao: 4.2, potencia: 5000 },
+            "RG-142": { atenuacao: 6, potencia: 2000 },
+            "Cellflex 1/2": { atenuacao: 3, potencia: 7000 },
+            "Cellflex 7/8": { atenuacao: 2, potencia: 15000 },
+        };
+
+        function calcular() {
+            const frequencia = parseFloat(document.getElementById("frequencia").value);
+            const distancia = parseFloat(document.getElementById("distancia").value);
+            const caboSelecionado = document.getElementById("cabo").value;
+
+            if (frequencia > 0 && distancia > 0) {
+                const dadosCabo = cabos[caboSelecionado];
+
+                // Calcula a perda no cabo
+                const perda = (dadosCabo.atenuacao / 100) * distancia;
+
+                // Potência máxima suportada
+                const potenciaMaxima = dadosCabo.potencia;
+
+                document.getElementById("resultado").textContent = 
+                    "Perda no Cabo: " + perda.toFixed(2) + " dB\n" +
+                    "Potência Máxima Suportada: " + potenciaMaxima + " W";
+            } else {
+                document.getElementById("resultado").textContent = "A frequência e a distância devem ser maiores que zero.";
+            }
+        }
+    </script>
+<br><button onclick="history.back()">Voltar</button>
+</br>
+</center>
+</body>
+</html>

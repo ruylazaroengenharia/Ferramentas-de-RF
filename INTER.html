@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise de Intermodulação</title>
+    <style>
+        body  {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        }
+        input {
+            padding: 5px;
+            margin: 5px 0;
+            width: 120px;
+        }
+        button {
+                padding: 10px;
+            margin: 10px 0;
+        }
+        .result {
+            margin-top: 20px;
+        }
+        .result div {
+            background-color: #f0f0f0;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+        .alert {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .ok {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        hr {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            border: 0;
+            border-top: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+<center>
+    <h2>Análise de Intermodulação até a 3ª Ordem</h2>
+    
+    <p>Insira até 8 pares de frequências (TX e RX em MHz):</p>
+    <div>
+        <div>
+            <input type="number" id="tx1" placeholder="TX 1 (MHz)" step="0.0001">
+            <input type="number" id="rx1" placeholder="RX 1 (MHz)" step="0.0001"><br>
+            <input type="number" id="tx2" placeholder="TX 2 (MHz)" step="0.0001">
+            <input type="number" id="rx2" placeholder="RX 2 (MHz)" step="0.0001"><br>
+            <input type="number" id="tx3" placeholder="TX 3 (MHz)" step="0.0001">
+            <input type="number" id="rx3" placeholder="RX 3 (MHz)" step="0.0001"><br>
+            <input type="number" id="tx4" placeholder="TX 4 (MHz)" step="0.0001">
+            <input type="number" id="rx4" placeholder="RX 4 (MHz)" step="0.0001"><br>
+            <input type="number" id="tx5" placeholder="TX 5 (MHz)" step="0.0001">
+            <input type="number" id="rx5" placeholder="RX 5 (MHz)" step="0.0001"><br>
+            <input type="number" id="tx6" placeholder="TX 6 (MHz)" step="0.0001">
+            <input type="number" id="rx6" placeholder="RX 6 (MHz)" step="0.0001"><br>
+            <input type="number" id="tx7" placeholder="TX 7 (MHz)" step="0.0001">
+            <input type="number" id="rx7" placeholder="RX 7 (MHz)" step="0.0001"><br>
+            <input type="number" id="tx8" placeholder="TX 8 (MHz)" step="0.0001">
+            <input type="number" id="rx8" placeholder="RX 8 (MHz)" step="0.0001">
+        </div>
+    </div>
+
+    <button onclick="calcularIntermodulacao()">Calcular Intermodulação</button>
+
+    <div id="output" class="result"></div>
+
+    <hr>
+
+    <div id="summary" class="result"></div>
+
+
+<br><button onclick="history.back()">Voltar</button>
+</br>
+</center>
+
+<script>
+    function calcularIntermodulacao() {
+        // Obter as frequências de TX e RX
+        let txFrequencias = [];
+        let rxFrequencias = [];
+
+        for (let i = 1; i <= 8; i++) {
+            let tx = parseFloat(document.getElementById('tx' + i).value);
+            let rx = parseFloat(document.getElementById('rx' + i).value);
+
+            if (!isNaN(tx)) txFrequencias.push(tx);
+            if (!isNaN(rx)) rxFrequencias.push(rx);
+        }
+
+        if (txFrequencias.length === 0 || rxFrequencias.length === 0) {
+            alert("Por favor, insira pelo menos um par de TX e RX.");
+            return;
+        }
+
+        const ordem = 3;
+        const intermods = [];
+        let outputDiv = document.getElementById('output');
+        let summaryDiv = document.getElementById('summary');
+        outputDiv.innerHTML = ''; // Limpar saída anterior
+        summaryDiv.innerHTML = ''; // Limpar resumo anterior
+
+        // Gerar combinações de intermodulação até a 3ª ordem
+        for (let m = -ordem; m <= ordem; m++) {
+            for (let n = -ordem; n <= ordem; n++) {
+                if (m === 0 && n === 0) continue;
+                for (let f1 of txFrequencias) {
+                    for (let f2 of txFrequencias) {
+                        let fim = Math.abs(m * f1 + n * f2);
+                        intermods.push(parseFloat(fim.toFixed(6))); // Arredondar e adicionar
+                    }
+                }
+            }
+        }
+
+        // Remover duplicatas e ordenar
+        let intermodsUnicas = [...new Set(intermods)].sort((a, b) => a - b);
+
+        // Mostrar resumo das intermodulações calculadas
+        summaryDiv.innerHTML = `<strong>Resumo dos Produtos de Intermodulação Calculados:</strong><br>` +
+                               `Total de produtos únicos: ${intermodsUnicas.length}<br>` +
+                               `Frequências IM (MHz): ${intermodsUnicas.join(', ')}`;
+
+        // Analisar se os produtos de intermodulação coincidem com as frequências de RX
+        rxFrequencias.forEach(rx => {
+            let encontrou = intermodsUnicas.includes(rx);
+            let div = document.createElement('div');
+            
+            if (encontrou) {
+                div.className = 'alert';
+                div.textContent = `A frequência de RX ${rx} MHz deve ser evitada! Produto de intermodulação presente.`;
+            } else {
+                div.className = 'ok';
+                div.textContent = `A frequência de RX ${rx} MHz está livre de intermodulação.`;
+            }
+            
+            outputDiv.appendChild(div);
+        });
+    }
+</script>
+
+</body>
+</html>

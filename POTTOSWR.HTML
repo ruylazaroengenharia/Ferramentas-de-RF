@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcular VSWR e Perda de Retorno a partir da Potência Refletida</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body><center>
+
+    <h1>Calculadora de VSWR e Perda de Retorno</h1>
+    <br></br>
+    <label for="pIncidente">Potência Incidente (W):</label>
+    <input type="number" id="pIncidente" placeholder="Digite a potência incidente" step="any">
+    <br></br>
+    <label for="pRefletida">Potência Refletida (W):</label>
+    <input type="number" id="pRefletida" placeholder="Digite a potência refletida" step="any">
+    <br></br>
+    <button onclick="calcular()">Calcular VSWR e Perda de Retorno</button>
+    
+    <p id="resultado"></p>
+
+    <script>
+        function calcular() {
+            var pIncidente = parseFloat(document.getElementById("pIncidente").value);
+            var pRefletida = parseFloat(document.getElementById("pRefletida").value);
+
+            if (pIncidente > 0 && pRefletida >= 0 && pRefletida < pIncidente) {
+                // Calcula o coeficiente de reflexão (Gamma)
+                var gamma = Math.sqrt(pRefletida / pIncidente);
+
+                // Calcula o VSWR
+                var vswr = (1 + gamma) / (1 - gamma);
+
+                // Calcula a Perda de Retorno (RL)
+                var rl = -20 * Math.log10(gamma);
+
+                document.getElementById("resultado").textContent = 
+                    "VSWR: " + vswr.toFixed(3) + "\n" +
+                    "Perda de Retorno: " + rl.toFixed(2) + " dB";
+            } else {
+                document.getElementById("resultado").textContent = "Insira valores válidos. A potência refletida deve ser menor que a potência incidente.";
+            }
+        }
+    </script>
+<br><button onclick="history.back()">Voltar</button>
+</br>
+</center>
+</body>
+</html>

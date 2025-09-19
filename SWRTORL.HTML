@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversão de VSWR para Perda de Retorno</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body><center>
+
+    <h1>Conversor de VSWR para Perda de Retorno</h1>
+    
+    <label for="vswrInput">Insira o valor de VSWR:</label>
+    <input type="number" id="vswrInput" placeholder="Digite o valor de VSWR" step="any">
+    <button onclick="converter()">Converter para Perda de Retorno (dB)</button>
+    
+    <p id="resultado"></p>
+
+    <script>
+        function converter() {
+            var vswr = parseFloat(document.getElementById("vswrInput").value);
+            
+            if (vswr > 1) {
+                var rl = 20 * Math.log10((vswr - 1) / (vswr + 1)); // Fórmula para VSWR -> RL
+                document.getElementById("resultado").textContent = "O valor de Perda de Retorno (RL) é: " + rl.toFixed(2) + " dB";
+            } else {
+                document.getElementById("resultado").textContent = "Insira um valor de VSWR maior que 1.";
+            }
+        }
+    </script>
+<br></br>
+ <h1>Conversor de Perda de Retorno para VSWR</h1>
+    
+    <label for="rlInput">Insira o valor de Perda de Retorno (dB):</label>
+    <input type="number" id="rlInput" placeholder="Digite o valor em dB" step="any">
+    <button onclick="converter()">Converter para VSWR</button>
+    
+    <p id="resultado"></p>
+
+    <script>
+        function converter() {
+            var rl = parseFloat(document.getElementById("rlInput").value);
+            
+            if (rl > 0) {
+                var vswr = (1 + Math.pow(10, rl / 20)) / (1 - Math.pow(10, rl / 20)); // Fórmula para RL -> VSWR
+                document.getElementById("resultado").textContent = "O valor de VSWR é: " + vswr.toFixed(3);
+            } else {
+                document.getElementById("resultado").textContent = "Insira um valor válido maior que 0.";
+            }
+        }
+    </script>
+
+<br><button onclick="history.back()">Voltar</button>
+</br>
+</center>
+</body>
+</html>

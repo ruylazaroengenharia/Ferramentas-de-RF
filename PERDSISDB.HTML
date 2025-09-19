@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cálculo de Potência de Saída</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body><center>
+
+    <h1>Calculadora de Potência de Saída</h1>
+    <br></br>
+    <label for="potenciaEntrada">Potência de Entrada (W):</label>
+    <input type="number" id="potenciaEntrada" placeholder="Digite a potência de entrada" step="any">
+    <br></br>
+    <label for="perda">Perda do Sistema (dB):</label>
+    <input type="number" id="perda" placeholder="Digite a perda do sistema em dB" step="any">
+    <br></br>
+    <button onclick="calcular()">Calcular Potência de Saída</button>
+    
+    <p id="resultado"></p>
+
+    <script>
+        function calcular() {
+            var potenciaEntrada = parseFloat(document.getElementById("potenciaEntrada").value);
+            var perda = parseFloat(document.getElementById("perda").value);
+
+            // Verifica se a potência de entrada e a perda são válidas
+            if (potenciaEntrada > 0) {
+                // Calcula a potência de saída em watts
+                var potenciaSaida = potenciaEntrada * Math.pow(10, -perda / 10);
+
+                document.getElementById("resultado").textContent = 
+                    "Potência de Saída: " + potenciaSaida.toFixed(3) + " W";
+            } else {
+                document.getElementById("resultado").textContent = "A potência de entrada deve ser maior que zero.";
+            }
+        }
+    </script>
+<br><button onclick="history.back()">Voltar</button>
+</br>
+</center>
+</body>
+</html>

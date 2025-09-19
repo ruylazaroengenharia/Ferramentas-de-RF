@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cálculo da Perda no Espaço Livre</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body><center>
+
+    <h1>Cálculo da Perda no Espaço Livre</h1>
+    <br></br>
+    <label for="distancia">Distância (km):</label>
+    <input type="number" id="distancia" placeholder="Digite a distância em km" step="any">
+    <br></br>
+    <label for="frequencia">Frequência (MHz):</label>
+    <input type="number" id="frequencia" placeholder="Digite a frequência em MHz" step="any">
+    <br></br>
+    <label for="ganhoTx">Ganho da Antena de Transmissão (dB):</label>
+    <input type="number" id="ganhoTx" placeholder="Digite o ganho da antena de transmissão" step="any">
+    <br></br>
+    <label for="ganhoRx">Ganho da Antena de Recepção (dB):</label>
+    <input type="number" id="ganhoRx" placeholder="Digite o ganho da antena de recepção" step="any">
+    <br></br>
+    <button onclick="calcular()">Calcular Perda Total</button>
+    
+    <p id="resultado"></p>
+
+    <script>
+        function calcular() {
+            var distancia = parseFloat(document.getElementById("distancia").value);
+            var frequencia = parseFloat(document.getElementById("frequencia").value);
+            var ganhoTx = parseFloat(document.getElementById("ganhoTx").value);
+            var ganhoRx = parseFloat(document.getElementById("ganhoRx").value);
+
+            // Verifica se os valores de entrada são válidos
+            if (distancia > 0 && frequencia > 0) {
+                // Converte a distância de km para metros
+                var distanciaMetros = distancia * 1000;
+
+                // Converte a frequência de MHz para Hz
+                var frequenciaHz = frequencia * 1e6;
+
+                // Calcula a FSPL (dB)
+                var fspl = 20 * Math.log10(distanciaMetros) + 20 * Math.log10(frequenciaHz) + 20 * Math.log10(4 * Math.PI / 3e8);
+
+                // Calcula o ganho total
+                var ganhoTotal = ganhoTx + ganhoRx;
+
+                // Calcula a perda total
+                var perdaTotal = fspl - ganhoTotal;
+
+                document.getElementById("resultado").textContent = 
+                    "Perda Total: " + perdaTotal.toFixed(2) + " dB";
+            } else {
+                document.getElementById("resultado").textContent = "A distância e a frequência devem ser maiores que zero.";
+            }
+        }
+    </script>
+<br><button onclick="history.back()">Voltar</button>
+</br>
+</center>
+</body>
+</html>

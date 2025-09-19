@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversão de dBi para dB</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body><center>
+
+    <h1>Conversor de dBi para dB</h1>
+    
+    <label for="dbiInput">Insira o valor em dBi:</label>
+    <input type="number" id="dbiInput" placeholder="Digite o valor em dBi">
+    <button onclick="converter()">Converter para dB</button>
+    
+    <p id="resultado"></p>
+
+    <script>
+        function converter() {
+            var dbi = parseFloat(document.getElementById("dbiInput").value);
+            var db = dbi - 2.15; // Subtrai 2,15 dB para converter de dBi para dB
+            
+            document.getElementById("resultado").textContent = "O valor em dB é: " + db.toFixed(2);
+        }
+    </script>
+<br><button onclick="history.back()">Voltar</button>
+</br>
+</center>
+</body>
+</html>

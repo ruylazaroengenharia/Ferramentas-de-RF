@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cálculo de Perda em um Sistema</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body><center>
+
+    <h1>Calculadora de Perda em um Sistema</h1>
+    <br></br>
+    <label for="potenciaEntrada">Potência de Entrada (W):</label>
+    <input type="number" id="potenciaEntrada" placeholder="Digite a potência de entrada" step="any">
+    <br></br>
+    <label for="potenciaSaida">Potência de Saída (W):</label>
+    <input type="number" id="potenciaSaida" placeholder="Digite a potência de saída" step="any">
+    <br></br>
+    <button onclick="calcular()">Calcular Perda em dB</button>
+    
+    <p id="resultado"></p>
+
+    <script>
+        function calcular() {
+            var potenciaEntrada = parseFloat(document.getElementById("potenciaEntrada").value);
+            var potenciaSaida = parseFloat(document.getElementById("potenciaSaida").value);
+
+            // Verifica se as potências são válidas
+            if (potenciaEntrada > 0 && potenciaSaida >= 0) {
+                // Calcula a perda em dB
+                var perdaDB = 10 * Math.log10(potenciaEntrada / potenciaSaida);
+
+                document.getElementById("resultado").textContent = 
+                    "Perda: " + perdaDB.toFixed(2) + " dB";
+            } else {
+                document.getElementById("resultado").textContent = "A potência de entrada deve ser maior que zero e a potência de saída deve ser maior ou igual a zero.";
+            }
+        }
+    </script>
+<br><button onclick="history.back()">Voltar</button>
+</br>
+</center>
+</body>
+</html>

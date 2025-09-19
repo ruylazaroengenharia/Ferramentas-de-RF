@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversão de Watts para dBm</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body><center>
+
+    <h1>Conversor de Watts para dBm</h1>
+    
+    <label for="wattsInput">Insira o valor em Watts:</label>
+    <input type="number" id="wattsInput" placeholder="Digite o valor em Watts" step="any">
+    <button onclick="converter()">Converter para dBm</button>
+    
+    <p id="resultado"></p>
+
+    <script>
+        function converter() {
+            var watts = parseFloat(document.getElementById("wattsInput").value);
+            if (watts > 0) {
+                var dbm = 10 * Math.log10(watts) + 30; // Fórmula para converter de Watts para dBm
+                document.getElementById("resultado").textContent = "O valor em dBm é: " + dbm.toFixed(2) + " dBm";
+            } else {
+                document.getElementById("resultado").textContent = "Insira um valor válido maior que 0.";
+            }
+        }
+    </script>
+<br><button onclick="history.back()">Voltar</button>
+</br>
+</center>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Calculadora de Distância entre Antenas</title>
+  <style>
+    body{font-family:Arial, sans-serif;max-width:900px;margin:24px auto;padding:18px}
+    h1{font-size:1.4rem;margin-bottom:6px}
+    label{display:block;margin-top:10px}
+    input,select{padding:8px;margin-top:4px;width:100%;box-sizing:border-box}
+    .row{display:flex;gap:12px}
+    .col{flex:1}
+    .card{border-radius:10px;padding:12px;border:1px solid #ddd;margin-top:12px}
+    .result{font-weight:700;font-size:1.2rem;margin-top:10px}
+    svg{width:100%;height:120px;margin-top:12px}
+    .hint{font-size:0.9rem;color:#555}
+    footer{font-size:0.85rem;color:#666;margin-top:14px}
+    button{padding:10px 12px;margin-top:10px}
+  </style>
+</head>
+<body>
+  <h1>Calculadora de Distância entre Antenas</h1>
+  <div class="card">
+    <label>Frequência</label>
+    <div class="row">
+      <div class="col">
+        <input id="freqValue" type="number" min="0" step="any" value="430" />
+      </div>
+      <div style="width:140px">
+        <select id="freqUnit">
+          <option value="MHz">MHz</option>
+          <option value="kHz">kHz</option>
+          <option value="GHz">GHz</option>
+        </select>
+      </div>
+    </div>
+
+    <label>Fator de separação (multiplicador do comprimento de onda λ)</label>
+    <select id="factor">
+      <option value="0.25">0.25 × λ</option>
+      <option value="0.5" selected>0.5 × λ</option>
+      <option value="1">1 × λ</option>
+      <option value="2">2 × λ</option>
+      <option value="3">3 × λ</option>
+    </select>
+
+    <button id="calcBtn">Calcular distância</button>
+
+    <div id="output" class="card" style="background:#fafafa; display:none">
+      <div id="wavelength"></div>
+      <div id="distance" class="result"></div>
+      <div id="advice" class="hint"></div>
+    </div>
+
+    <footer>
+      λ = c / f (c ≈ 299.792.458 m/s). Valores são referência — condições reais podem exigir ajustes.
+    </footer>
+  </div>
+
+  <script>
+    const c = 299792458; // m/s
+
+    function getFrequencyHz(value, unit){
+      if(unit === 'MHz') return value * 1e6;
+      if(unit === 'kHz') return value * 1e3;
+      if(unit === 'GHz') return value * 1e9;
+      return value;
+    }
+
+    function formatMeters(m){
+      if(m >= 1) return m.toFixed(3) + ' m';
+      if(m >= 0.01) return (m*100).toFixed(2) + ' cm';
+      return (m*1000).toFixed(1) + ' mm';
+    }
+
+    document.getElementById('calcBtn').addEventListener('click', ()=>{
+      const val = parseFloat(document.getElementById('freqValue').value);
+      const unit = document.getElementById('freqUnit').value;
+      const factor = parseFloat(document.getElementById('factor').value);
+
+      if(Number.isNaN(val) || val <= 0){
+        alert('Informe uma frequência válida.');
+        return;
+      }
+
+      const fHz = getFrequencyHz(val, unit);
+      const lambda = c / fHz;
+      const distance = lambda * factor;
+
+      document.getElementById('wavelength').textContent = 'Comprimento de onda λ = ' + lambda.toFixed(4) + ' m';
+      document.getElementById('distance').textContent = 'Distância calculada = ' + formatMeters(distance) + ' (fator ' + factor + ' × λ)';
+
+      let advice = '';
+      if(factor <= 0.4) advice = 'Separação muito próxima — risco de acoplamento alto.';
+      else if(factor <= 0.75) advice = 'Separação prática mínima para reduzir acoplamento.';
+      else if(factor <= 1.5) advice = 'Boa isolação para muitas aplicações.';
+      else advice = 'Isolação alta — acoplamento bastante reduzido.';
+
+      document.getElementById('advice').textContent = advice;
+      document.getElementById('output').style.display = 'block';
+    });
+  </script>
+<br><button onclick="history.back()">Voltar</button>
+</br>
+</body>
+</html>
