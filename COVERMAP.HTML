@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Heatmap Offline Completo</title>
+<title>Heatmap Offline com Controle de Antenas</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <style>
   html, body { height: 100%; margin: 0; padding: 0; font-family: Arial, sans-serif; }
@@ -14,6 +14,15 @@
   th, td { border: 1px solid #ccc; padding: 5px; text-align: center; }
   th { background: #eee; }
   tr:hover { background: #f0f0f0; cursor: pointer; }
+  #btnVoltar, #exportBtn {
+    background: #3498db;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  #btnVoltar:hover, #exportBtn:hover {
+    background: #217dbb;
+  }
 </style>
 </head>
 <body>
@@ -37,6 +46,7 @@
     <tbody></tbody>
   </table>
 
+  <button id="btnVoltar">Voltar Página Anterior</button>
   <button id="exportBtn">Exportar Heatmap PNG</button>
 </div>
 
@@ -57,6 +67,7 @@ document.addEventListener('DOMContentLoaded', function(){
     let heatPoints = [];
     const heat = L.heatLayer(heatPoints, {radius: 25, blur: 15, maxZoom: 17}).addTo(map);
     let antennas = [];
+    let markers = [];
 
     // Gera pontos do heatmap
     function generateHeatPoints(lat, lon, pot, altura, numPoints=200, maxRadius=2000){
@@ -99,9 +110,9 @@ document.addEventListener('DOMContentLoaded', function(){
         heatPoints = heatPoints.concat(points);
         heat.setLatLngs(heatPoints);
 
-        L.marker([lat, lon]).addTo(map)
-            .bindPopup(`${nome}<br>Potência: ${pot} W<br>Altura: ${altura} m`)
-            .openPopup();
+        const marker = L.marker([lat, lon]).addTo(map)
+            .bindPopup(`<b>${nome}</b><br>Potência: ${pot} W<br>Altura: ${altura} m`);
+        markers.push(marker);
 
         map.setView([lat, lon], 15);
 
@@ -111,10 +122,12 @@ document.addEventListener('DOMContentLoaded', function(){
 
         this.reset();
     });
- // Voltar à página anterior
+
+    // Voltar à página anterior
     document.getElementById('btnVoltar').addEventListener('click', () => {
         window.history.back();
     });
+
     // Exportar mapa completo
     document.getElementById('exportBtn').addEventListener('click', () => {
         leafletImage(map, function(err, canvas) {
@@ -131,6 +144,3 @@ document.addEventListener('DOMContentLoaded', function(){
 
 </body>
 </html>
-
-
-
