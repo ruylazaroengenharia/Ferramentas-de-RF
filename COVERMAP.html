@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Heatmap Offline Completo</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<style>
+  html, body { height: 100%; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+  body { display: flex; }
+  #map { flex: 1; height: 100vh; }
+  #sidebar { width: 360px; background: #fff; padding: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.3); overflow-y: auto; }
+  input, button { width: 100%; margin: 5px 0; padding: 5px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  th, td { border: 1px solid #ccc; padding: 5px; text-align: center; }
+  th { background: #eee; }
+  tr:hover { background: #f0f0f0; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<div id="sidebar">
+  <h3>Adicionar Antena</h3>
+  <form id="antennaForm">
+    Nome: <input type="text" id="nome" required>
+    Latitude: <input type="number" id="lat" step="0.0001" required>
+    Longitude: <input type="number" id="lon" step="0.0001" required>
+    Potência (W): <input type="number" id="pot" required>
+    Altura (m): <input type="number" id="altura" required>
+    <button type="submit">Adicionar</button>
+  </form>
+
+  <h3>Antenas Cadastradas</h3>
+  <table id="antennaTable">
+    <thead><tr><th>Nome</th><th>Potência (%)</th><th>Altura (m)</th></tr></thead>
+    <tbody></tbody>
+  </table>
+
+  <button id="exportBtn">Exportar Heatmap PNG</button>
+</div>
+
+<!-- Scripts -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+<script src="https://unpkg.com/leaflet-image/leaflet-image.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+
+    // Inicializa mapa
+    const map = L.map('map').setView([-23.5505, -46.6333], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    let heatPoints = [];
+    const heat = L.heatLayer(heatPoints, {radius: 25, blur: 15, maxZoom: 17}).addTo(map);
+    let antennas = [];
+
+    // Gera pontos do heatmap
+    function generateHeatPoints(lat, lon, pot, altura, numPoints=200, maxRadius=2000){
+        let points = [];
+        for(let i=0; i<numPoints; i++){
+            const r = Math.random() * maxRadius;
+            const angle = Math.random() * 2 * Math.PI;
+            const dx = r * Math.cos(angle) / 111320;
+            const dy = r * Math.sin(angle) / 110540;
+            const intensity = Math.max(0.1, Math.min(1, (pot * (altura/10)) / (r/100 + 1)));
+            points.push([lat + dy, lon + dx, intensity]);
+        }
+        return points;
+    }
+
+    function getColor(percent){
+        if(percent > 66) return "#ff0000";
+        if(percent > 33) return "#ffff00";
+        return "#00ff00";
+    }
+
+    function addAntennaToTable(antenna){
+        const tbody = document.querySelector('#antennaTable tbody');
+        const row = tbody.insertRow();
+        const percent = Math.min(100, Math.round(antenna.pot));
+        row.innerHTML = `<td>${antenna.nome}</td><td style="background:${getColor(percent)}">${percent}%</td><td>${antenna.altura}</td>`;
+        row.addEventListener('click', () => map.setView([antenna.lat, antenna.lon], 15));
+    }
+
+    // Formulário
+    document.getElementById('antennaForm').addEventListener('submit', function(e){
+        e.preventDefault();
+        const nome = document.getElementById('nome').value;
+        const lat = parseFloat(document.getElementById('lat').value);
+        const lon = parseFloat(document.getElementById('lon').value);
+        const pot = parseFloat(document.getElementById('pot').value);
+        const altura = parseFloat(document.getElementById('altura').value);
+
+        const points = generateHeatPoints(lat, lon, pot, altura);
+        heatPoints = heatPoints.concat(points);
+        heat.setLatLngs(heatPoints);
+
+        L.marker([lat, lon]).addTo(map)
+            .bindPopup(`${nome}<br>Potência: ${pot} W<br>Altura: ${altura} m`)
+            .openPopup();
+
+        map.setView([lat, lon], 15);
+
+        const antennaObj = {nome, lat, lon, pot, altura};
+        antennas.push(antennaObj);
+        addAntennaToTable(antennaObj);
+
+        this.reset();
+    });
+
+    // Exportar mapa completo
+    document.getElementById('exportBtn').addEventListener('click', () => {
+        leafletImage(map, function(err, canvas) {
+            if(err) { alert("Erro ao gerar imagem"); return; }
+            const link = document.createElement('a');
+            link.download = 'heatmap_completo.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        });
+    });
+
+});
+</script>
+
+</body>
+</html>
+
+
