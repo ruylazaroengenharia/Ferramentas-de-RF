@@ -111,7 +111,10 @@ document.addEventListener('DOMContentLoaded', function(){
 
         this.reset();
     });
-
+ // Voltar à página anterior
+    document.getElementById('btnVoltar').addEventListener('click', () => {
+        window.history.back();
+    });
     // Exportar mapa completo
     document.getElementById('exportBtn').addEventListener('click', () => {
         leafletImage(map, function(err, canvas) {
@@ -128,5 +131,6 @@ document.addEventListener('DOMContentLoaded', function(){
 
 </body>
 </html>
+
 
 
