@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cálculo de Azimute, Distância e Inclinação entre Antenas</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f7;
+    color: #222;
+    max-width: 520px;
+    margin: 40px auto;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  }
+  h2 { text-align: center; }
+  label { display: block; margin-top: 10px; font-weight: bold; }
+  input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 4px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+  }
+  button {
+    margin-top: 15px;
+    padding: 10px;
+    width: 100%;
+    border: none;
+    background-color: #0078d7;
+    color: white;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  button:hover { background-color: #005fa3; }
+  #resultado {
+    margin-top: 20px;
+    font-size: 1.1em;
+    background: #e8f0fe;
+    padding: 15px;
+    border-radius: 6px;
+    line-height: 1.6em;
+  }
+</style>
+</head>
+<body>
+
+<h2>Calculadora de Azimute, Distância e Inclinação</h2>
+
+<form id="azForm">
+  <label>Latitude Ponto A:</label>
+  <input type="number" id="lat1" step="any" placeholder="-17.60550015" required>
+
+  <label>Longitude Ponto A:</label>
+  <input type="number" id="lon1" step="any" placeholder="-42.35284771" required>
+
+  <label>Altitude Ponto A (m):</label>
+  <input type="number" id="alt1" step="any" placeholder="800" required>
+
+  <label>Latitude Ponto B:</label>
+  <input type="number" id="lat2" step="any" placeholder="-17.44520599" required>
+
+  <label>Longitude Ponto B:</label>
+  <input type="number" id="lon2" step="any" placeholder="-42.35459416" required>
+
+  <label>Altitude Ponto B (m):</label>
+  <input type="number" id="alt2" step="any" placeholder="950" required>
+
+  <button type="button" onclick="calcular()">Calcular</button>
+</form>
+
+<div id="resultado"></div>
+
+<script>
+// Função principal
+function calcular() {
+  const lat1 = parseFloat(document.getElementById('lat1').value);
+  const lon1 = parseFloat(document.getElementById('lon1').value);
+  const alt1 = parseFloat(document.getElementById('alt1').value);
+  const lat2 = parseFloat(document.getElementById('lat2').value);
+  const lon2 = parseFloat(document.getElementById('lon2').value);
+  const alt2 = parseFloat(document.getElementById('alt2').value);
+
+  if ([lat1, lon1, lat2, lon2, alt1, alt2].some(isNaN)) {
+    document.getElementById('resultado').textContent = "⚠️ Preencha todos os campos corretamente.";
+    return;
+  }
+
+  // --- Distância geodésica (fórmula de Haversine) ---
+  const R = 6371; // raio da Terra em km
+  const φ1 = lat1 * Math.PI / 180;
+  const φ2 = lat2 * Math.PI / 180;
+  const Δφ = (lat2 - lat1) * Math.PI / 180;
+  const Δλ = (lon2 - lon1) * Math.PI / 180;
+
+  const a = Math.sin(Δφ/2)**2 + Math.cos(φ1)*Math.cos(φ2)*Math.sin(Δλ/2)**2;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distancia_km = R * c;
+  const distancia_m = distancia_km * 1000;
+
+  // --- Azimute ---
+  const x = Math.sin(Δλ) * Math.cos(φ2);
+  const y = Math.cos(φ1)*Math.sin(φ2) - Math.sin(φ1)*Math.cos(φ2)*Math.cos(Δλ);
+  let θ = Math.atan2(x, y);
+  let azimute = (θ * 180 / Math.PI + 360) % 360;
+
+  // --- Inclinação (ângulo de elevação) ---
+  const deltaAlt = alt2 - alt1; // diferença de altura em metros
+  const inclinacao = Math.atan2(deltaAlt, distancia_m) * 180 / Math.PI; // em graus
+
+  // Exibição dos resultados
+  document.getElementById('resultado').innerHTML = `
+    📏 <strong>Distância:</strong> ${distancia_km.toFixed(3)} km<br>
+    🧭 <strong>Azimute:</strong> ${azimute.toFixed(2)}° (a partir do Norte verdadeiro)<br>
+    📐 <strong>Diferença de altitude:</strong> ${deltaAlt.toFixed(2)} m<br>
+    🎯 <strong>Ângulo de inclinação (elevação da antena A):</strong> ${inclinacao.toFixed(2)}°
+  `;
+}
+</script>
+
+</body>
+</html>
+
